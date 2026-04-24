@@ -46,7 +46,8 @@ if (empty($icon_type)) {
 $count_output = '';
 
 $current_count = count(
-	(new \BlocksyChild\Compare\CompareView())
+	blocksy_companion_get_ext('woocommerce-extra')
+		->get_compare()
 		->get_current_compare_list()
 );
 

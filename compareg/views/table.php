@@ -1,6 +1,6 @@
 <?php
 
-namespace BlocksyChild\Compare;
+namespace Blocksy\Extensions\WoocommerceExtra;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -42,7 +42,9 @@ class CompareTable {
 
 		$product->set_attributes($maybeVariationsAttrs);
 
-		$is_simple_product = ['value' => $product->is_type('simple') || $product->is_type('external')];
+		$is_simple_product = blocksy_companion_get_ext(
+			'woocommerce-extra'
+		)->utils->is_simple_product($product);
 
 		if ($is_simple_product['value'] && !$is_mobile) {
 			do_action('woocommerce_simple_add_to_cart');
@@ -59,7 +61,7 @@ class CompareTable {
 		if (
 			blocksy_akg('compare_row_sticky', $layout, 'no') === 'yes'
 			&&
-			get_theme_mod('compare_table_placement', 'modal') === 'modal'
+			blocksy_companion_theme_functions()->blocksy_get_theme_mod('compare_table_placement', 'modal') === 'modal'
 		) {
 			$classes[] = 'ct-compare-row-is-sticky';
 		}
@@ -68,7 +70,8 @@ class CompareTable {
 	}
 
 	public static function render() {
-		$compare_list = (new \BlocksyChild\Compare\CompareView())
+		$compare_list = blocksy_companion_get_ext('woocommerce-extra')
+			->get_compare()
 			->get_current_compare_list();
 
 
@@ -90,7 +93,7 @@ class CompareTable {
 			);
 		}
 
-		$render_layout_config = get_theme_mod('product_compare_layout', [
+		$render_layout_config = blocksy_companion_theme_functions()->blocksy_get_theme_mod('product_compare_layout', [
 			[
 				'id' => 'product_main',
 				'enabled' => true,
@@ -180,14 +183,16 @@ class CompareTable {
 		return blocksy_html_tag(
 			'div',
 			['class' => 'ct-compare-row'],
-			$heading_html .
+			self::render_compare_column(
+				'&nbsp;',
+				['class' => 'ct-compare-column ct-compare-item-label']
+			) .
 			implode('', $products_html)
 		);
 	}
 
 	public static function product_main($products, $layout) {
 		$products_html = [];
-		$heading_html = '<div class="ct-compare-row-heading ct-empty-heading"></div>';
 
 		foreach ($products as $product) {
 			$GLOBALS['product'] = $product;
@@ -244,7 +249,6 @@ class CompareTable {
 
 	public static function product_title($products, $layout) {
 		$products_html = [];
-		$heading_html = '<div class="ct-compare-row-heading">' . __('Title', 'blocksy-companion') . '</div>';
 
 		foreach ($products as $product) {
 			$GLOBALS['product'] = $product;
@@ -268,7 +272,9 @@ class CompareTable {
 								'href' => $product->is_visible() ? $product->get_permalink() : '',
 							],
 						),
-						$product->get_title()
+						blocksy_companion_get_ext(
+							'woocommerce-extra'
+						)->utils->get_formatted_title($product->get_id())
 					)
 				)
 			);
@@ -291,7 +297,6 @@ class CompareTable {
 
 	public static function product_price($products, $layout) {
 		$products_html = [];
-		$heading_html = '<div class="ct-compare-row-heading">' . __('Price', 'blocksy-companion') . '</div>';
 
 		foreach ($products as $product) {
 			$GLOBALS['product'] = $product;
@@ -320,7 +325,6 @@ class CompareTable {
 
 	public static function product_add_to_cart($products, $layout) {
 		$products_html = [];
-		$heading_html = '<div class="ct-compare-row-heading">' . __('Action', 'blocksy-companion') . '</div>';
 
 		foreach ($products as $product) {
 			$GLOBALS['product'] = $product;
@@ -349,7 +353,6 @@ class CompareTable {
 
 	public static function product_description($products, $layout) {
 		$products_html = [];
-		$heading_html = '<div class="ct-compare-row-heading">' . __('Description', 'blocksy-companion') . '</div>';
 
 		foreach ($products as $product) {
 			$GLOBALS['product'] = $product;
@@ -378,7 +381,6 @@ class CompareTable {
 
 	public static function product_sku($products, $layout) {
 		$products_html = [];
-		$heading_html = '<div class="ct-compare-row-heading">' . __('SKU', 'blocksy-companion') . '</div>';
 		$has_content = false;
 
 		foreach ($products as $product) {
@@ -416,7 +418,6 @@ class CompareTable {
 
 	public static function product_availability($products, $layout) {
 		$products_html = [];
-		$heading_html = '<div class="ct-compare-row-heading">' . __('Availability', 'blocksy-companion') . '</div>';
 
 		foreach ($products as $product) {
 			$GLOBALS['product'] = $product;
@@ -445,7 +446,6 @@ class CompareTable {
 
 	public static function product_rating($products, $layout) {
 		$products_html = [];
-		$heading_html = '<div class="ct-compare-row-heading">' . __('Rating', 'blocksy-companion') . '</div>';
 		$has_content = false;
 
 		foreach ($products as $product) {

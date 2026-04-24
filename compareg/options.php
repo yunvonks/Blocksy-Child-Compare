@@ -126,7 +126,8 @@ $options = [
 							'selector' => '#ct-compare-modal .ct-compare-table',
 							'render' => function() {
 								// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-								echo (new \BlocksyChild\Compare\CompareView())
+								echo blocksy_companion_get_ext('woocommerce-extra')
+									->get_compare()
 									->get_compare_table_content();
 							},
 							'container_inclusive' => false,

@@ -1,6 +1,6 @@
 <?php
 
-namespace BlocksyChild\Compare;
+namespace Blocksy\Extensions\WoocommerceExtra;
 
 if (! defined('ABSPATH')) {
 	exit;
@@ -16,69 +16,6 @@ class CompareView {
 	}
 
 	public function __construct() {
-
-		// Remove parent Blocksy Companion Compare closures
-		add_action('wp', function() {
-			global $wp_filter;
-
-			// 1. Remove the_content closure
-			if (isset($wp_filter['the_content'])) {
-				foreach ($wp_filter['the_content']->callbacks as $priority => $callbacks) {
-					foreach ($callbacks as $id => $callback) {
-						if (is_object($callback['function']) && ($callback['function'] instanceof \Closure)) {
-							$reflection = new \ReflectionFunction($callback['function']);
-							if (strpos($reflection->getFileName(), 'woocommerce-extra/feature.php') !== false) {
-								remove_filter('the_content', $callback['function'], $priority);
-							}
-						}
-					}
-				}
-			}
-
-			// 2. Remove blocksy:footer:offcanvas-drawer closure
-			if (isset($wp_filter['blocksy:footer:offcanvas-drawer'])) {
-				foreach ($wp_filter['blocksy:footer:offcanvas-drawer']->callbacks as $priority => $callbacks) {
-					foreach ($callbacks as $id => $callback) {
-						if (is_object($callback['function']) && ($callback['function'] instanceof \Closure)) {
-							$reflection = new \ReflectionFunction($callback['function']);
-							if (strpos($reflection->getFileName(), 'woocommerce-extra/feature.php') !== false) {
-								remove_filter('blocksy:footer:offcanvas-drawer', $callback['function'], $priority);
-							}
-						}
-					}
-				}
-			}
-
-            // 3. Remove single product additional actions closure
-            if (isset($wp_filter['blocksy:woocommerce:single-product:additional-actions:content:has_compare'])) {
-				foreach ($wp_filter['blocksy:woocommerce:single-product:additional-actions:content:has_compare']->callbacks as $priority => $callbacks) {
-					foreach ($callbacks as $id => $callback) {
-						if (is_object($callback['function']) && ($callback['function'] instanceof \Closure)) {
-							$reflection = new \ReflectionFunction($callback['function']);
-							if (strpos($reflection->getFileName(), 'woocommerce-extra/feature.php') !== false) {
-								remove_filter('blocksy:woocommerce:single-product:additional-actions:content:has_compare', $callback['function'], $priority);
-							}
-						}
-					}
-				}
-			}
-
-            // 4. Remove wp_enqueue_scripts closure
-            if (isset($wp_filter['wp_enqueue_scripts'])) {
-				foreach ($wp_filter['wp_enqueue_scripts']->callbacks as $priority => $callbacks) {
-					foreach ($callbacks as $id => $callback) {
-						if (is_object($callback['function']) && ($callback['function'] instanceof \Closure)) {
-							$reflection = new \ReflectionFunction($callback['function']);
-							if (strpos($reflection->getFileName(), 'woocommerce-extra/feature.php') !== false) {
-								remove_action('wp_enqueue_scripts', $callback['function'], $priority);
-							}
-						}
-					}
-				}
-			}
-		});
-
-
 		add_filter('blocksy:header:items-paths', function ($paths) {
 			$paths[] = dirname(__FILE__) . '/header-items';
 			return $paths;
@@ -96,7 +33,7 @@ class CompareView {
 					'[class*="ct-compare-button"]',
 				]),
 				'url' => blocksy_cdn_url(
-					get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare.js'
+					BLOCKSY_URL . 'framework/premium/extensions/woocommerce-extra/static/bundle/compare.js'
 				),
 				'trigger' => 'click',
 				'has_loader' => [
@@ -110,7 +47,7 @@ class CompareView {
 				'selector' =>
 					'[href="#ct-compare-modal"][data-behaviour="modal"], [data-shortcut="compare"][data-behaviour="modal"]',
 				'url' => blocksy_cdn_url(
-					get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare-modal.js'
+					BLOCKSY_URL . 'framework/premium/extensions/woocommerce-extra/static/bundle/compare-modal.js'
 				),
 				'trigger' => 'click',
 				'has_loader' => [
@@ -131,7 +68,7 @@ class CompareView {
 						'[class*="ct-compare-button"]',
 					]),
 					'url' => blocksy_cdn_url(
-						get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare.js'
+						BLOCKSY_URL . 'framework/premium/extensions/woocommerce-extra/static/bundle/compare.js'
 					),
 					'version' => blocksy_companion_get_version()
 				];
@@ -150,7 +87,8 @@ class CompareView {
 				'id' => 'blocksy_ext_woo_extra_compare_bar_tooltip',
 				'selector' => '.ct-compare-bar',
 				'url' => blocksy_cdn_url(
-					get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare-bar-tooltip.js'
+					BLOCKSY_URL .
+					'framework/premium/extensions/woocommerce-extra/static/bundle/compare-bar-tooltip.js'
 				),
 				'trigger' => 'hover',
 				'version' => blocksy_companion_get_version()
@@ -160,26 +98,29 @@ class CompareView {
 		});
 
 		add_action('wp_enqueue_scripts', function () {
-			$data = ['Version' => wp_get_theme()->get('Version')];
+			if (! function_exists('get_plugin_data')) {
+				require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+			}
 
-			if (get_theme_mod('product_compare_bar', 'no') === 'no') {
+			$data = get_plugin_data(BLOCKSY__FILE__);
+
+			if (blocksy_companion_theme_functions()->blocksy_get_theme_mod('product_compare_bar', 'no') === 'no') {
 				return;
 			}
 
 			wp_enqueue_style(
 				'blocksy-ext-compare-bar',
-				get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare-bar.min.css',
+				BLOCKSY_URL . 'framework/premium/extensions/woocommerce-extra/static/bundle/compare-bar.min.css',
 				['ct-main-styles'],
 				$data['Version']
 			);
 		});
 
 		add_filter('blocksy:footer:offcanvas-drawer', function ($els, $payload) {
-
 			if (
 				$payload['location'] !== 'end'
 				||
-				get_theme_mod('product_compare_bar', 'no') === 'no'
+				blocksy_companion_theme_functions()->blocksy_get_theme_mod('product_compare_bar', 'no') === 'no'
 				||
 				(
 					defined('REST_REQUEST')
@@ -197,7 +138,7 @@ class CompareView {
 				]
 			];
 
-			$conditions = get_theme_mod(
+			$conditions = blocksy_companion_theme_functions()->blocksy_get_theme_mod(
 				'compare_bar_conditions',
 				$initial_conditions
 			);
@@ -270,18 +211,6 @@ class CompareView {
 			},
 			50
 		);
-
-
-		add_filter('blocksy:frontend:dynamic-js-chunks', function ($chunks) {
-			$chunks[] = [
-				'id' => 'blocksy_ext_woo_extra_compare_side_pop',
-				'selector' => '.qcfw-side-pop-wrapper',
-				'url' => get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare-side-pop.js',
-				'trigger' => 'hover', // Or click, Blocksy handles lazy loading
-			];
-			return $chunks;
-		});
-
 
 		$this->boot_compare();
 
@@ -427,17 +356,12 @@ class CompareView {
 		);
 
 		add_filter('the_content', function ($content) {
-            // Because the parent theme also appends its table via `the_content`, we can't easily remove it if it's a closure.
-            // BUT we can use JavaScript to remove the duplicate table if it exists.
-            // Actually, we can remove ALL existing ct-compare-table elements using a regex on the $content string!
 
-
-
-			if (get_theme_mod('compare_table_placement', 'modal') !== 'page') {
+			if (blocksy_companion_theme_functions()->blocksy_get_theme_mod('compare_table_placement', 'modal') !== 'page') {
 				return $content;
 			}
 
-			$maybe_page_id = get_theme_mod('woocommerce_compare_page');
+			$maybe_page_id = blocksy_companion_theme_functions()->blocksy_get_theme_mod('woocommerce_compare_page');
 
 			if (empty($maybe_page_id)) {
 				return $content;
@@ -456,7 +380,7 @@ class CompareView {
 			$data['dynamic_styles_selectors'][] = [
 				'selector' => '#ct-compare-modal',
 				'url' => blocksy_cdn_url(
-					get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare.min.css'
+					BLOCKSY_URL . 'framework/premium/extensions/woocommerce-extra/static/bundle/compare.min.css'
 				)
 			];
 
@@ -466,18 +390,22 @@ class CompareView {
 		add_action(
 			'wp_enqueue_scripts',
 			function() {
-				$maybe_page_id = get_theme_mod('woocommerce_compare_page');
+				$maybe_page_id = blocksy_companion_theme_functions()->blocksy_get_theme_mod('woocommerce_compare_page');
 
 				if (
 					! empty($maybe_page_id)
 					&&
 					get_the_id() === $maybe_page_id
 				) {
-					$data = ['Version' => wp_get_theme()->get('Version')];
+					if (! function_exists('get_plugin_data')) {
+						require_once(ABSPATH . 'wp-admin/includes/plugin.php');
+					}
+
+					$data = get_plugin_data(BLOCKSY__FILE__);
 
 					wp_enqueue_style(
 						'blocksy-compare-list',
-						get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare.min.css',
+						BLOCKSY_URL . 'framework/premium/extensions/woocommerce-extra/static/bundle/compare.min.css',
 						[],
 						$data['Version']
 					);
