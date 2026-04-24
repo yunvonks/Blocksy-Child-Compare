@@ -103,7 +103,7 @@ class CompareView {
 
 			$data = get_plugin_data(BLOCKSY__FILE__);
 
-			if (blocksy_companion_theme_functions()->blocksy_get_theme_mod('product_compare_bar', 'no') === 'no') {
+			if (get_theme_mod('product_compare_bar', 'no') === 'no') {
 				return;
 			}
 
@@ -119,7 +119,7 @@ class CompareView {
 			if (
 				$payload['location'] !== 'end'
 				||
-				blocksy_companion_theme_functions()->blocksy_get_theme_mod('product_compare_bar', 'no') === 'no'
+				get_theme_mod('product_compare_bar', 'no') === 'no'
 				||
 				(
 					defined('REST_REQUEST')
@@ -137,7 +137,7 @@ class CompareView {
 				]
 			];
 
-			$conditions = blocksy_companion_theme_functions()->blocksy_get_theme_mod(
+			$conditions = get_theme_mod(
 				'compare_bar_conditions',
 				$initial_conditions
 			);
@@ -356,11 +356,11 @@ class CompareView {
 
 		add_filter('the_content', function ($content) {
 
-			if (blocksy_companion_theme_functions()->blocksy_get_theme_mod('compare_table_placement', 'modal') !== 'page') {
+			if (get_theme_mod('compare_table_placement', 'modal') !== 'page') {
 				return $content;
 			}
 
-			$maybe_page_id = blocksy_companion_theme_functions()->blocksy_get_theme_mod('woocommerce_compare_page');
+			$maybe_page_id = get_theme_mod('woocommerce_compare_page');
 
 			if (empty($maybe_page_id)) {
 				return $content;
@@ -389,7 +389,7 @@ class CompareView {
 		add_action(
 			'wp_enqueue_scripts',
 			function() {
-				$maybe_page_id = blocksy_companion_theme_functions()->blocksy_get_theme_mod('woocommerce_compare_page');
+				$maybe_page_id = get_theme_mod('woocommerce_compare_page');
 
 				if (
 					! empty($maybe_page_id)
