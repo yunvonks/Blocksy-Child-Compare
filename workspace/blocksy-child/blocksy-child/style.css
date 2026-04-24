@@ -6,21 +6,30 @@
  * Text Domain: blocksy
  */
 
+
 /* Gadget360-style Compare Table for Blocksy */
 .ct-compare-table {
     display: flex;
     flex-direction: column;
     border-collapse: collapse;
     width: 100%;
-    margin-top: 20px;
     background: #fff;
     border: 1px solid #eaeaea;
+    border-radius: 8px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    color: #333;
 }
 
 .ct-compare-row {
     display: flex;
     flex-direction: row;
     border-bottom: 1px solid #eaeaea;
+    align-items: stretch;
+}
+
+.ct-compare-row:last-child {
+    border-bottom: none;
 }
 
 /* Gadget360 sticky header row */
@@ -29,74 +38,104 @@
     top: 0;
     z-index: 10;
     background: #fff;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    padding-bottom: 15px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    padding-bottom: 20px;
+    padding-top: 20px;
+}
+
+/* Make image row columns relative to position the close button */
+.ct-compare-row[data-row="product_main"] .ct-compare-column {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 .ct-compare-column {
     flex: 1;
-    padding: 15px;
+    padding: 15px 20px;
     border-right: 1px solid #eaeaea;
-    text-align: center;
+    text-align: left; /* Text alignment left to match Gadget360 details */
+    min-width: 250px;
 }
 
 .ct-compare-column:last-child {
     border-right: none;
 }
 
-/* Feature Name Column (if exists) */
+/* Feature Name Column (Left side) */
 .ct-compare-row-heading {
     flex: 0 0 200px;
-    background: #fafafa;
+    background: #f9f9f9;
     font-weight: 600;
     text-align: left;
-    padding: 15px;
+    padding: 15px 20px;
     border-right: 1px solid #eaeaea;
     display: flex;
     align-items: center;
+    color: #666;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .ct-compare-row[data-row="product_main"] .ct-compare-row-heading {
     background: #fff; /* Keep sticky top row white */
+    border-right: none;
+}
+
+.ct-compare-row-heading.ct-empty-heading {
+    /* Empty left block for the image row */
 }
 
 .ct-compare-table img {
-    max-width: 150px;
+    max-width: 100%;
     height: auto;
-    margin-bottom: 10px;
+    object-fit: contain;
+    margin-bottom: 15px;
+    display: block;
 }
 
-.ct-compare-column .price {
-    font-size: 1.1em;
-    font-weight: bold;
-    color: #e02020;
-}
-
-.ct-compare-column .woocommerce-loop-product__title {
+.ct-compare-row[data-row="product_price"] .ct-compare-column {
     font-size: 1.2em;
-    font-weight: 600;
-    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
 }
 
+.ct-compare-row[data-row="product_title"] .ct-compare-column {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #000;
+}
+
+/* Remove button styling - Modern cross in top right of image block */
 .ct-compare-remove {
     position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #f0f0f0;
+    top: 15px;
+    right: 15px;
+    background: transparent;
+    color: #999;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    border: 1px solid #ccc;
+    border: 1px solid #ddd;
+    transition: all 0.2s ease;
 }
 
 .ct-compare-remove:hover {
-    background: #e02020;
+    background: #000;
     color: #fff;
-    border-color: #e02020;
+    border-color: #000;
+}
+
+.ct-compare-remove svg {
+    width: 12px;
+    height: 12px;
 }
 
 /* Modals shouldn't break sticky top */
@@ -105,6 +144,34 @@
     box-shadow: none;
 }
 
+#ct-compare-modal .ct-compare-table {
+    border: none;
+    border-radius: 0;
+}
+
+/* Alternating row colors for readability */
+.ct-compare-row:nth-child(even):not([data-row="product_main"]) .ct-compare-column {
+    background: #fdfdfd;
+}
+
+/* Table scroll wrapper for mobile */
+.ct-compare-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 768px) {
+    .ct-compare-row-heading {
+        flex: 0 0 120px;
+        font-size: 0.8em;
+        padding: 10px;
+    }
+    .ct-compare-column {
+        min-width: 180px;
+        padding: 10px;
+    }
+}
 /* Qode Compare For WooCommerce Side Pop Styles */
 .qcfw-side-pop-wrapper {
     position: fixed;
