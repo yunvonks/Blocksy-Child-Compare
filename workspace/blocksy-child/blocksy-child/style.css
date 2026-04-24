@@ -122,6 +122,9 @@
 }
 
 .qcfw-m-side-pop-opener {
+    width: 48px;
+    height: 48px;
+
     background: #fff;
     border: 1px solid #eaeaea;
     border-right: none;
@@ -157,6 +160,10 @@
 }
 
 .qcfw-m-side-pop-content {
+    display: none;
+    position: absolute;
+    right: 100%; /* pop out to the left of the button */
+    top: 0;
     background: #fff;
     width: 320px;
     border: 1px solid #eaeaea;

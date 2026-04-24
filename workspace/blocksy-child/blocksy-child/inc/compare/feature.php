@@ -211,6 +211,17 @@ class CompareView {
 			50
 		);
 
+
+		add_filter('blocksy:frontend:dynamic-js-chunks', function ($chunks) {
+			$chunks[] = [
+				'id' => 'blocksy_ext_woo_extra_compare_side_pop',
+				'selector' => '.qcfw-side-pop-wrapper',
+				'url' => get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare-side-pop.js',
+				'trigger' => 'hover', // Or click, Blocksy handles lazy loading
+			];
+			return $chunks;
+		});
+
 		$this->boot_compare();
 
 		add_action('wp_ajax_blocksy_get_woo_compare', [
