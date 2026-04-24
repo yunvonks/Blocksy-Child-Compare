@@ -1,15 +1,11 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Blocksy Premium Comparison and our Child Theme Comparison might both render.
-    // Let's clean up duplicates.
-
-    // 1. Remove duplicate compare bars
+function cleanupDuplicateCompareElements() {
+    // 1. Remove duplicate compare bars (Keep only our side pop wrapper)
     const originalCompareBars = document.querySelectorAll('.ct-compare-bar:not(.qcfw-side-pop-wrapper)');
     originalCompareBars.forEach(bar => bar.remove());
 
     // 2. Remove duplicate compare tables (if placed on page)
     const tables = document.querySelectorAll('.ct-compare-table');
     if (tables.length > 1) {
-        // Keep only the last one (which is usually ours since we appended it later)
         for (let i = 0; i < tables.length - 1; i++) {
             tables[i].remove();
         }
@@ -23,26 +19,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // 4. Remove duplicate 'Add to Compare' tooltips on archive products
+    // 4. Remove duplicate archive buttons per product
     const archiveButtons = document.querySelectorAll('.ct-compare-button-archive');
-    // Group them by product ID
-    const productBtns = {};
+    const productBtns = new Map();
     archiveButtons.forEach(btn => {
-        // Find nearest product wrapper or use data attr
-        const wrapper = btn.closest('.product');
+        const wrapper = btn.closest('.product') || btn.closest('.product-card') || btn.parentElement;
         if (wrapper) {
-            if (!productBtns[wrapper]) {
-                productBtns[wrapper] = [];
+            if (!productBtns.has(wrapper)) {
+                productBtns.set(wrapper, []);
             }
-            productBtns[wrapper].push(btn);
+            productBtns.get(wrapper).push(btn);
         }
     });
 
-    for (let wrapper in productBtns) {
-        if (productBtns[wrapper].length > 1) {
-            for (let i = 0; i < productBtns[wrapper].length - 1; i++) {
-                productBtns[wrapper][i].remove();
+    productBtns.forEach(btns => {
+        if (btns.length > 1) {
+            for (let i = 0; i < btns.length - 1; i++) {
+                btns[i].remove();
             }
         }
-    }
+    });
+}
+
+// Run immediately and also set up an observer for dynamically loaded products/AJAX
+document.addEventListener('DOMContentLoaded', () => {
+    cleanupDuplicateCompareElements();
+
+    // Catch dynamic injects
+    setTimeout(cleanupDuplicateCompareElements, 500);
+    setTimeout(cleanupDuplicateCompareElements, 2000);
+
+    const observer = new MutationObserver((mutations) => {
+        let shouldRun = false;
+        mutations.forEach(mut => {
+            if (mut.addedNodes.length) {
+                shouldRun = true;
+            }
+        });
+        if (shouldRun) {
+            cleanupDuplicateCompareElements();
+        }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
 });

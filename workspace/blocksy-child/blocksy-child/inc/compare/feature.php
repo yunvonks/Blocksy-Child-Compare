@@ -16,6 +16,69 @@ class CompareView {
 	}
 
 	public function __construct() {
+
+		// Remove parent Blocksy Companion Compare closures
+		add_action('wp', function() {
+			global $wp_filter;
+
+			// 1. Remove the_content closure
+			if (isset($wp_filter['the_content'])) {
+				foreach ($wp_filter['the_content']->callbacks as $priority => $callbacks) {
+					foreach ($callbacks as $id => $callback) {
+						if (is_object($callback['function']) && ($callback['function'] instanceof \Closure)) {
+							$reflection = new \ReflectionFunction($callback['function']);
+							if (strpos($reflection->getFileName(), 'woocommerce-extra/feature.php') !== false) {
+								remove_filter('the_content', $callback['function'], $priority);
+							}
+						}
+					}
+				}
+			}
+
+			// 2. Remove blocksy:footer:offcanvas-drawer closure
+			if (isset($wp_filter['blocksy:footer:offcanvas-drawer'])) {
+				foreach ($wp_filter['blocksy:footer:offcanvas-drawer']->callbacks as $priority => $callbacks) {
+					foreach ($callbacks as $id => $callback) {
+						if (is_object($callback['function']) && ($callback['function'] instanceof \Closure)) {
+							$reflection = new \ReflectionFunction($callback['function']);
+							if (strpos($reflection->getFileName(), 'woocommerce-extra/feature.php') !== false) {
+								remove_filter('blocksy:footer:offcanvas-drawer', $callback['function'], $priority);
+							}
+						}
+					}
+				}
+			}
+
+            // 3. Remove single product additional actions closure
+            if (isset($wp_filter['blocksy:woocommerce:single-product:additional-actions:content:has_compare'])) {
+				foreach ($wp_filter['blocksy:woocommerce:single-product:additional-actions:content:has_compare']->callbacks as $priority => $callbacks) {
+					foreach ($callbacks as $id => $callback) {
+						if (is_object($callback['function']) && ($callback['function'] instanceof \Closure)) {
+							$reflection = new \ReflectionFunction($callback['function']);
+							if (strpos($reflection->getFileName(), 'woocommerce-extra/feature.php') !== false) {
+								remove_filter('blocksy:woocommerce:single-product:additional-actions:content:has_compare', $callback['function'], $priority);
+							}
+						}
+					}
+				}
+			}
+
+            // 4. Remove wp_enqueue_scripts closure
+            if (isset($wp_filter['wp_enqueue_scripts'])) {
+				foreach ($wp_filter['wp_enqueue_scripts']->callbacks as $priority => $callbacks) {
+					foreach ($callbacks as $id => $callback) {
+						if (is_object($callback['function']) && ($callback['function'] instanceof \Closure)) {
+							$reflection = new \ReflectionFunction($callback['function']);
+							if (strpos($reflection->getFileName(), 'woocommerce-extra/feature.php') !== false) {
+								remove_action('wp_enqueue_scripts', $callback['function'], $priority);
+							}
+						}
+					}
+				}
+			}
+		});
+
+
 		add_filter('blocksy:header:items-paths', function ($paths) {
 			$paths[] = dirname(__FILE__) . '/header-items';
 			return $paths;
@@ -112,14 +175,6 @@ class CompareView {
 		});
 
 		add_filter('blocksy:footer:offcanvas-drawer', function ($els, $payload) {
-			// Remove the original Blocksy Compare Bar to prevent duplicates
-			if (is_array($els)) {
-				foreach ($els as $key => $el) {
-					if (isset($el['attr']['data-compare-bar'])) {
-						unset($els[$key]);
-					}
-				}
-			}
 
 			if (
 				$payload['location'] !== 'end'
@@ -227,16 +282,6 @@ class CompareView {
 			return $chunks;
 		});
 
-
-		add_filter('blocksy:frontend:dynamic-js-chunks', function ($chunks) {
-			$chunks[] = [
-				'id' => 'blocksy_ext_woo_extra_compare_cleanup',
-				'selector' => 'body',
-				'url' => get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare-cleanup.js',
-				'trigger' => 'hover',
-			];
-			return $chunks;
-		});
 
 		$this->boot_compare();
 
@@ -386,7 +431,7 @@ class CompareView {
             // BUT we can use JavaScript to remove the duplicate table if it exists.
             // Actually, we can remove ALL existing ct-compare-table elements using a regex on the $content string!
 
-            $content = preg_replace('/<div class="ct-compare-table"[^>]*>.*?<\/div><!-- ct-compare-table end -->/is', '', $content); // if they had a wrapper
+
 
 			if (get_theme_mod('compare_table_placement', 'modal') !== 'page') {
 				return $content;

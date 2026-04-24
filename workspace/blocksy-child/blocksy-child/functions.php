@@ -70,14 +70,6 @@ add_action('admin_head', function() {
 
 
 
-// Tambahkan di functions.php atau plugin kustom
-add_action('init', function() {
-    $query_string = isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
-    if (strpos($query_string, 'filter_') === 0) {
-        status_header(403);
-        wp_die('Access Denied', 'Forbidden', ['response' => 403]);
-    }
-});
 
 /**
  * Initialize custom Compare feature
