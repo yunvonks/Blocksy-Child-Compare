@@ -1,0 +1,8 @@
+workspace/bundle/
+workspace/compare/
+*.py
+*.patch
+*.zip
+workspace/blocksy-child.zip
+workspace/compare.zip
+workspace/bundle.zip
