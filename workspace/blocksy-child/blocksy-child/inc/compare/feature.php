@@ -97,11 +97,7 @@ class CompareView {
 		});
 
 		add_action('wp_enqueue_scripts', function () {
-			if (! function_exists('get_plugin_data')) {
-				require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-			}
-
-			$data = get_plugin_data(BLOCKSY__FILE__);
+			$data = ['Version' => wp_get_theme()->get('Version')];
 
 			if (get_theme_mod('product_compare_bar', 'no') === 'no') {
 				return;
@@ -127,17 +123,6 @@ class CompareView {
 
 			if (
 				$payload['location'] !== 'end'
-				||
-				get_theme_mod('product_compare_bar', 'no') === 'no'
-				||
-				(
-					defined('REST_REQUEST')
-					&&
-					REST_REQUEST
-				)
-			) {
-				return $els;
-			}
 				||
 				get_theme_mod('product_compare_bar', 'no') === 'no'
 				||
@@ -406,8 +391,6 @@ class CompareView {
 			if (get_theme_mod('compare_table_placement', 'modal') !== 'page') {
 				return $content;
 			}
-				return $content;
-			}
 
 			$maybe_page_id = get_theme_mod('woocommerce_compare_page');
 
@@ -445,11 +428,7 @@ class CompareView {
 					&&
 					get_the_id() === $maybe_page_id
 				) {
-					if (! function_exists('get_plugin_data')) {
-						require_once(ABSPATH . 'wp-admin/includes/plugin.php');
-					}
-
-					$data = get_plugin_data(BLOCKSY__FILE__);
+					$data = ['Version' => wp_get_theme()->get('Version')];
 
 					wp_enqueue_style(
 						'blocksy-compare-list',
