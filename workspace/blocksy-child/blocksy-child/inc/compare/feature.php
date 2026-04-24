@@ -116,8 +116,28 @@ class CompareView {
 		});
 
 		add_filter('blocksy:footer:offcanvas-drawer', function ($els, $payload) {
+			// Remove the original Blocksy Compare Bar to prevent duplicates
+			if (is_array($els)) {
+				foreach ($els as $key => $el) {
+					if (isset($el['attr']['data-compare-bar'])) {
+						unset($els[$key]);
+					}
+				}
+			}
+
 			if (
 				$payload['location'] !== 'end'
+				||
+				get_theme_mod('product_compare_bar', 'no') === 'no'
+				||
+				(
+					defined('REST_REQUEST')
+					&&
+					REST_REQUEST
+				)
+			) {
+				return $els;
+			}
 				||
 				get_theme_mod('product_compare_bar', 'no') === 'no'
 				||
@@ -218,6 +238,17 @@ class CompareView {
 				'selector' => '.qcfw-side-pop-wrapper',
 				'url' => get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare-side-pop.js',
 				'trigger' => 'hover', // Or click, Blocksy handles lazy loading
+			];
+			return $chunks;
+		});
+
+
+		add_filter('blocksy:frontend:dynamic-js-chunks', function ($chunks) {
+			$chunks[] = [
+				'id' => 'blocksy_ext_woo_extra_compare_cleanup',
+				'selector' => 'body',
+				'url' => get_stylesheet_directory_uri() . '/inc/compare/static/bundle/compare-cleanup.js',
+				'trigger' => 'hover',
 			];
 			return $chunks;
 		});
@@ -366,8 +397,15 @@ class CompareView {
 		);
 
 		add_filter('the_content', function ($content) {
+            // Because the parent theme also appends its table via `the_content`, we can't easily remove it if it's a closure.
+            // BUT we can use JavaScript to remove the duplicate table if it exists.
+            // Actually, we can remove ALL existing ct-compare-table elements using a regex on the $content string!
+
+            $content = preg_replace('/<div class="ct-compare-table"[^>]*>.*?<\/div><!-- ct-compare-table end -->/is', '', $content); // if they had a wrapper
 
 			if (get_theme_mod('compare_table_placement', 'modal') !== 'page') {
+				return $content;
+			}
 				return $content;
 			}
 
