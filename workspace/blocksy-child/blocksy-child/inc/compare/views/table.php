@@ -59,7 +59,7 @@ class CompareTable {
 		if (
 			blocksy_akg('compare_row_sticky', $layout, 'no') === 'yes'
 			&&
-			blocksy_companion_theme_functions()->blocksy_get_theme_mod('compare_table_placement', 'modal') === 'modal'
+			get_theme_mod('compare_table_placement', 'modal') === 'modal'
 		) {
 			$classes[] = 'ct-compare-row-is-sticky';
 		}
@@ -90,7 +90,7 @@ class CompareTable {
 			);
 		}
 
-		$render_layout_config = blocksy_companion_theme_functions()->blocksy_get_theme_mod('product_compare_layout', [
+		$render_layout_config = get_theme_mod('product_compare_layout', [
 			[
 				'id' => 'product_main',
 				'enabled' => true,
