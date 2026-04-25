@@ -1,0 +1,292 @@
+/**
+ * Theme Name: Blocksy Child
+ * Description: Blocksy Child theme
+ * Author: Creative Themes
+ * Template: blocksy
+ * Text Domain: blocksy
+ */
+
+/* Beebom Style Compare UI */
+
+/* Floating Button */
+.custom-floating-compare-btn {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background: #000;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999998;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    transition: transform 0.2s, background 0.2s;
+    text-decoration: none !important;
+}
+
+.custom-floating-compare-btn:hover {
+    background: #222;
+    transform: scale(1.05);
+    color: #fff;
+}
+
+.custom-floating-compare-btn .compare-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    color: #fff;
+    font-size: 12px;
+    font-weight: bold;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+}
+
+/* Popup Container */
+.custom-compare-popup {
+    position: fixed;
+    right: 20px;
+    bottom: 90px;
+    width: 340px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+    z-index: 999999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px) scale(0.95);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid #f3f4f6;
+    overflow: hidden;
+    transform-origin: bottom right;
+}
+
+.custom-compare-popup.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Header */
+.custom-compare-popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 18px 20px;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.custom-compare-popup-title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.custom-compare-popup-title span {
+    font-weight: 400;
+    color: #6b7280;
+    font-size: 14px;
+}
+
+.custom-compare-popup-close {
+    color: #9ca3af;
+    display: flex;
+    transition: color 0.2s;
+}
+
+.custom-compare-popup-close:hover {
+    color: #111827;
+}
+
+/* Body & Slots */
+.custom-compare-popup-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.compare-slot-item {
+    position: relative;
+    border: 1px solid #f3f4f6;
+    border-radius: 8px;
+    background: #f9fafb;
+    transition: border-color 0.2s;
+}
+
+.compare-slot-item:hover {
+    border-color: #e5e7eb;
+}
+
+.compare-slot-item.filled-slot {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    gap: 15px;
+    background: #fff;
+}
+
+.slot-thumbnail {
+    width: 50px;
+    height: 50px;
+    flex-shrink: 0;
+    background: #f9fafb;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.slot-thumbnail img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.slot-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.slot-title {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #1f2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.custom-compare-remove-btn {
+    color: #9ca3af;
+    padding: 5px;
+    display: flex;
+    transition: color 0.2s;
+}
+
+.custom-compare-remove-btn:hover {
+    color: #ef4444;
+}
+
+/* Empty Slot / Search */
+.compare-slot-item.empty-slot {
+    padding: 15px;
+}
+
+.custom-compare-search-wrapper {
+    position: relative;
+}
+
+.custom-compare-search-input {
+    width: 100%;
+    padding: 10px 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+    background: #fff;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.custom-compare-search-input:focus {
+    border-color: #000;
+}
+
+.custom-compare-search-results {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    display: none;
+    z-index: 10000;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.custom-compare-search-results ul {
+    list-style: none;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.cc-search-item {
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 13px;
+    color: #374151;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.cc-search-item:last-child {
+    border-bottom: none;
+}
+
+.cc-search-item:hover {
+    background: #f9fafb;
+    color: #000;
+}
+
+.cc-loading, .cc-no-results {
+    padding: 10px 15px;
+    font-size: 13px;
+    color: #6b7280;
+    text-align: center;
+}
+
+/* Footer & Main Button */
+.custom-compare-popup-footer {
+    padding: 20px;
+    background: #fff;
+    border-top: 1px solid #f3f4f6;
+}
+
+.custom-compare-main-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px;
+    background: #000 !important;
+    color: #fff !important;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: background 0.2s;
+    text-decoration: none !important;
+}
+
+.custom-compare-main-btn:hover {
+    background: #222 !important;
+}
+
+@media (max-width: 480px) {
+    .custom-compare-popup {
+        right: 10px;
+        left: 10px;
+        width: auto;
+        bottom: 80px;
+    }
+
+    .custom-floating-compare-btn {
+        right: 15px;
+        bottom: 15px;
+    }
+}
